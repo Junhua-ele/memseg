@@ -1,0 +1,8 @@
+{
+	"best_step": 899,
+	"eval_AUROC-image": 0.9984126984126984,
+	"eval_Best-F1-score": 0.9919999837875366,
+	"eval_Best-threshold": 0.6094488501548767,
+	"eval_AUROC-pixel": 0.9773529536888522,
+	"eval_AUPRO-pixel": 0.97677282797757
+}

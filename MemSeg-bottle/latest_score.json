@@ -1,0 +1,8 @@
+{
+	"latest_step": 2000,
+	"eval_AUROC-image": 1.0,
+	"eval_Best-F1-score": 1.0,
+	"eval_Best-threshold": 0.3332504630088806,
+	"eval_AUROC-pixel": 0.975116047304902,
+	"eval_AUPRO-pixel": 0.9778230859004792
+}
