@@ -1,0 +1,1 @@
+{'batch_size': 6, 'num_training_steps': 2000, 'l1_weight': 0.6, 'focal_weight': 0.4, 'focal_alpha': None, 'focal_gamma': 4, 'use_mlflow': True}

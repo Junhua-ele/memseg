@@ -1,0 +1,15 @@
+artifact_uri: /home/qjh/MemSeg-main/mlruns/430028058192126923/0eea18d316c44794a1cfc68c65acc3ec/artifacts
+end_time: 1741819211539
+entry_point_name: ''
+experiment_id: '430028058192126923'
+lifecycle_stage: active
+run_id: 0eea18d316c44794a1cfc68c65acc3ec
+run_name: capable-auk-759
+run_uuid: 0eea18d316c44794a1cfc68c65acc3ec
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1741818030723
+status: 3
+tags: []
+user_id: qjh
