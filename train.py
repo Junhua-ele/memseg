@@ -171,7 +171,7 @@ def training(cfg, model, trainloader, validloader, criterion, optimizer, schedul
                 break
 
     # print best score and step
-    _logger.info('Best Metric: {0:.3%} (step {1:})'.format(best_score, state['best_step']))
+    # _logger.info('Best Metric: {0:.3%} (step {1:})'.format(best_score, state['best_step']))
 
     # save latest model
     torch.save(model.state_dict(), os.path.join(savedir, f'latest_model.pt'))
@@ -212,13 +212,15 @@ def evaluate(model, dataloader, device: str = 'cpu', save_dir: str = None):
             anomaly_score.extend(anomaly_score_i.cpu().tolist())
             anomaly_map.extend(outputs[:, 1, :].cpu().numpy())
 
-            if save_dir is not None and idx < 10:
+            if save_dir is not None:
+                file_path = dataloader.dataset.file_list[idx]
                 save_path = os.path.join(save_dir, f'combined_sample_{idx}.png')
                 create_heatmaps(
                     input_image=inputs[0].cpu(),
                     anomaly_map=outputs[0, 1, :].cpu().numpy(),
                     ground_truth=masks[0].cpu().numpy(),
-                    save_path=save_path
+                    save_path=save_path,
+                    file_path=file_path
                 )
 
     # metrics    
@@ -239,13 +241,10 @@ def evaluate(model, dataloader, device: str = 'cpu', save_dir: str = None):
         'AUROC-image': auroc_image,
         'Best-F1-score': best_f1,
         'Best-threshold': best_threshold,
-        'AUROC-pixel': auroc_pixel,
-        'AUPRO-pixel': aupro
-
     }
 
-    _logger.info('TEST: AUROC-image: %.3f%% | Best-F1-score: %.3f%% | Best-threshold: %.3f%% | AUROC-pixel: %.3f%% | AUPRO-pixel: %.3f%%' %
-                 (metrics['AUROC-image'], metrics['Best-F1-score'], metrics['Best-threshold'], metrics['AUROC-pixel'], metrics['AUPRO-pixel']))
+    _logger.info('TEST: AUROC-image: %.3f%% | Best-F1-score: %.3f%% | Best-threshold: %.3f%%' %
+                 (metrics['AUROC-image'], metrics['Best-F1-score'], metrics['Best-threshold']))
 
     return metrics
 
@@ -264,7 +263,7 @@ def compute_F1(image_targets, anomaly_score, device):
     return best_f1, best_threshold
 
 
-def create_heatmaps(input_image, anomaly_map, ground_truth, save_path):
+def create_heatmaps(input_image, anomaly_map, ground_truth, save_path, file_path):
     if not os.path.exists(os.path.dirname(save_path)):
         os.mkdir(os.path.dirname(save_path))
 

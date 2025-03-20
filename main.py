@@ -49,8 +49,7 @@ def run(cfg):
         min_perlin_scale=cfg.DATASET.min_perlin_scale,
         perlin_noise_threshold=cfg.DATASET.perlin_noise_threshold,
         use_mask=cfg.DATASET.use_mask,
-        bg_threshold=cfg.DATASET.bg_threshold,
-        bg_reverse=cfg.DATASET.bg_reverse
+        fg_path=cfg.DATASET.fg_path
     )
 
     memoryset = create_dataset(
@@ -60,6 +59,7 @@ def run(cfg):
         to_memory=True,
         resize=cfg.DATASET.resize,
         imagesize=cfg.DATASET.imagesize,
+        fg_path=cfg.DATASET.fg_path
     )
 
     testset = create_dataset(
@@ -68,6 +68,7 @@ def run(cfg):
         is_train=False,
         resize=cfg.DATASET.resize,
         imagesize=cfg.DATASET.imagesize,
+        fg_path=cfg.DATASET.fg_path
     )
 
     # build dataloader
