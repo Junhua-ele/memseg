@@ -8,7 +8,8 @@ def create_dataset(
     texture_source_dir: str = None, structure_grid_size: str = 8,
     transparency_range: List[float] = [0.15, 1.],
     perlin_scale: int = 6, min_perlin_scale: int = 0, perlin_noise_threshold: float = 0.5,
-    use_mask: bool = True, bg_threshold: float = 100, bg_reverse: bool = False
+    use_mask: bool = True, bg_threshold: float = 100, bg_reverse: bool = False,
+    fg_path: str = None
 ):
     dataset = MemSegDataset(
         datadir                = datadir,
@@ -25,7 +26,8 @@ def create_dataset(
         perlin_noise_threshold = perlin_noise_threshold,
         use_mask               = use_mask,
         bg_threshold           = bg_threshold,
-        bg_reverse             = bg_reverse
+        bg_reverse             = bg_reverse,
+        fg_path                = fg_path
     )
 
     return dataset

@@ -39,11 +39,13 @@ class MemSegDataset(Dataset):
         texture_source_dir: str = None, structure_grid_size: str = 8,
         transparency_range: List[float] = [0.15, 1.],
         perlin_scale: int = 6, min_perlin_scale: int = 0, perlin_noise_threshold: float = 0.5,
-        use_mask: bool = True, bg_threshold: float = 100, bg_reverse: bool = False
+        use_mask: bool = True, bg_threshold: float = 100, bg_reverse: bool = False,
+        fg_path: str = None
     ):
         # mode
         self.is_train = is_train 
         self.to_memory = to_memory
+        self.fg_path =fg_path
 
         # load image file list
         self.datadir = datadir
@@ -101,18 +103,13 @@ class MemSegDataset(Dataset):
         
         # target
         target = 0 if 'good' in self.file_list[idx] else 1
-        
-        # mask
-        if 'good' in file_path:
-            mask = np.zeros(self.resize, dtype=np.float32)
-        else:
-            mask = Image.open(file_path.replace('test','ground_truth').replace('.png','_mask.png')).resize(self.resize)
-            mask = np.array(mask)
+
+        mask = np.zeros(self.resize, dtype=np.float32)
         
         ## anomaly source
         if self.is_train and not self.to_memory:
             if self.anomaly_switch:
-                img, mask = self.generate_anomaly(img=img, texture_img_list=self.texture_source_file_list)
+                img, mask = self.generate_anomaly(img=img, texture_img_list=self.texture_source_file_list, file_path=file_path)
                 target = 1
                 self.anomaly_switch = False
                 
@@ -149,7 +146,7 @@ class MemSegDataset(Dataset):
         
         return aug
         
-    def generate_anomaly(self, img: np.ndarray, texture_img_list: list = None) -> List[np.ndarray]:
+    def generate_anomaly(self, img: np.ndarray, texture_img_list: list = None, file_path: str = None) -> List[np.ndarray]:
         '''
         step 1. generate mask
             - target foreground mask
@@ -169,7 +166,8 @@ class MemSegDataset(Dataset):
         
         ## target foreground mask
         if self.use_mask:
-            target_foreground_mask = self.generate_target_foreground_mask(img=img)
+            # target_foreground_mask = self.generate_target_foreground_mask(img=img)
+            target_foreground_mask = self.generate_target_foreground_mask(img=img, file_path=file_path)
         else:
             target_foreground_mask = np.ones(self.resize)
         
@@ -194,19 +192,13 @@ class MemSegDataset(Dataset):
         
         return (anomaly_source_img.astype(np.uint8), mask)
     
-    def generate_target_foreground_mask(self, img: np.ndarray) -> np.ndarray:
-        # convert RGB into GRAY scale
-        img_gray = cv2.cvtColor(img, cv2.COLOR_RGB2GRAY)
-        
-        # generate binary mask of gray scale image
-        _, target_background_mask = cv2.threshold(img_gray, self.bg_threshold, 255, cv2.THRESH_BINARY)
-        target_background_mask = target_background_mask.astype(bool).astype(int)
+    def generate_target_foreground_mask(self, img: np.ndarray, file_path: str) -> np.ndarray:
+        mask_name = os.path.splitext(file_path)[0] + '.png'
+        mask_fullpath = os.path.join(self.fg_path, os.path.basename(mask_name))
 
-        # invert mask for foreground mask
-        if self.bg_reverse:
-            target_foreground_mask = target_background_mask
-        else:
-            target_foreground_mask = -(target_background_mask - 1)
+        if os.path.exists(mask_fullpath):
+            mask = Image.open(mask_fullpath).convert('L').resize(self.resize)
+            target_foreground_mask = np.array(mask)
         
         return target_foreground_mask
     
